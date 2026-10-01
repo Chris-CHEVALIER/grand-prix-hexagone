@@ -192,7 +192,7 @@
 <section>
   <div class="section-head">
     <h2>Poules</h2>
-    <p>Un Grand Prix de 4 courses par poule. Le premier de chaque poule et les 3 meilleurs deuxièmes rejoignent les demi-finales.</p>
+    <p>Un Grand Prix de 4 courses par poule. Le premier de chaque poule et les 2 meilleurs deuxièmes rejoignent les demi-finales.</p>
   </div>
   <div class="grid" id="pools"></div>
 </section>
@@ -254,7 +254,7 @@
 <script>
 (() => {
   "use strict";
-  const POOLS = ["A", "B", "C", "D", "E"];
+  const POOLS = ["A", "B", "C", "D", "E", "F"];
   const DOC_PATH = "tournoi/etat";
   const LS_KEY = "gp-hexagone-etat";
   const LS_MODE = "gp-hexagone-mode";
@@ -262,15 +262,16 @@
 
   const ROSTER = [
     ["A", "Pavlo", "B1"], ["A", "Paul", "B2"], ["A", "Thomas G.", "B1"], ["A", "Rim", "B2"],
-    ["B", "Nael", "B1"], ["B", "Charif", "B2"], ["B", "Philippine", "B2"], ["B", "Chris", "Staff"],
+    ["B", "Nael", "B1"], ["B", "Charif", "B2"], ["B", "Chris", "Staff"],
     ["C", "Augustin", "B1"], ["C", "Julien", "B2"], ["C", "Sunny", "B1"], ["C", "Alexane", "B2"],
-    ["D", "Maxime", "B1"], ["D", "Timothée", "B2"], ["D", "Bocar", "B2"], ["D", "Joan", "Staff"],
+    ["D", "Maxime", "B1"], ["D", "Timothée", "B2"], ["D", "Joan", "Staff"],
     ["E", "Thomas P.", "B1"], ["E", "Thomas D.", "B2"], ["E", "Jules", "B1"], ["E", "Baptiste", "B2"],
+    ["F", "Manon", "Staff"], ["F", "Xavier", "Staff"], ["F", "Philippine", "B2"], ["F", "Bocar", "B2"],
   ];
   const defaultState = () => ({
-    v: 1,
+    v: 2,
     players: ROSTER.map(([pool, name, promo], i) => ({ id: "p" + (i + 1), name, promo, pool, out: false })),
-    scores: { A: {}, B: {}, C: {}, D: {}, E: {}, SF1: {}, SF2: {}, F: {} },
+    scores: { A: {}, B: {}, C: {}, D: {}, E: {}, F: {}, SF1: {}, SF2: {}, FIN: {} },
   });
 
   let state = defaultState();
@@ -324,13 +325,13 @@
     if (sf1Done && sf2Done) {
       fin = standing("SF1", sf1).slice(0, 2).concat(standing("SF2", sf2).slice(0, 2)).map((r) => r.p.id);
     }
-    const finDone = fin && played("F", fin);
-    const podium = finDone ? standing("F", fin).slice(0, 3) : [];
+    const finDone = fin && played("FIN", fin);
+    const podium = finDone ? standing("FIN", fin).slice(0, 3) : [];
     const order = pools.map((g) => ({ code: g.code, title: "Poule " + g.code, ids: g.ids, done: g.done }))
       .concat([
         { code: "SF1", title: "Demi-finale 1", ids: sf1, done: sf1Done },
         { code: "SF2", title: "Demi-finale 2", ids: sf2, done: sf2Done },
-        { code: "F", title: "Finale", ids: fin, done: finDone },
+        { code: "FIN", title: "Finale", ids: fin, done: finDone },
       ]);
     const next = order.find((g) => g.ids && !g.done && g.ids.map(byId).filter((p) => p && !p.out).length >= 2) || null;
     return { pools, poolsDone, seeds: new Set(seeds), wildcards, sf1, sf2, fin, sf1Done, sf2Done, finDone, podium, next, order };
@@ -408,7 +409,7 @@
     ].join("");
 
     // Finale
-    $("final").innerHTML = groupCard({ code: "F", title: "Finale", ids: c.fin, done: c.finDone }, c,
+    $("final").innerHTML = groupCard({ code: "FIN", title: "Finale", ids: c.fin, done: c.finDone }, c,
       (r, i) => (c.finDone && i < 3 ? `<span class="tag q">${["Or", "Argent", "Bronze"][i]}</span>` : ""), "Finaliste à venir");
 
     // Podium
@@ -507,7 +508,7 @@
   });
 
   /* ---------- Démarrage ---------- */
-  try { const s = JSON.parse(localStorage.getItem(LS_KEY) || "null"); if (s && Array.isArray(s.players)) state = s; } catch (e) {}
+  try { const s = JSON.parse(localStorage.getItem(LS_KEY) || "null"); if (s && s.v === 2 && Array.isArray(s.players)) state = s; } catch (e) {}
   try { editMode = localStorage.getItem(LS_MODE) === "edit"; } catch (e) {}
   applyMode();
   render();
