@@ -261,15 +261,15 @@
   const MAX_PER_GROUP = 4;
 
   const ROSTER = [
-    ["A", "Pavlo", "B1"], ["A", "Paul", "B2"], ["A", "Thomas G.", "B1"], ["A", "Rim", "B2"],
+    ["A", "Paul", "B2"], ["A", "Thomas G.", "B1"], ["A", "Hugo", "B1"],
     ["B", "Nael", "B1"], ["B", "Charif", "B2"], ["B", "Chris", "Staff"],
     ["C", "Augustin", "B1"], ["C", "Julien", "B2"], ["C", "Sunny", "B1"], ["C", "Alexane", "B2"],
-    ["D", "Maxime", "B1"], ["D", "Timothée", "B2"], ["D", "Joan", "Staff"], ["D", "Hugo", "B1"],
+    ["D", "Maxime", "B1"], ["D", "Timothée", "B2"], ["D", "Joan", "Staff"],
     ["E", "Thomas P.", "B1"], ["E", "Thomas D.", "B2"], ["E", "Jules", "B1"], ["E", "Baptiste", "B2"],
-    ["F", "Manon", "Staff"], ["F", "Xavier", "Staff"], ["F", "Philippine", "B2"], ["F", "Bocar", "B2"],
+    ["F", "Manon", "Staff"], ["F", "Xavier", "Staff"], ["F", "Bocar", "B2"],
   ];
   const defaultState = () => ({
-    v: 3,
+    v: 4,
     players: ROSTER.map(([pool, name, promo], i) => ({ id: "p" + (i + 1), name, promo, pool, out: false })),
     scores: { A: {}, B: {}, C: {}, D: {}, E: {}, F: {}, SF1: {}, SF2: {}, FIN: {} },
   });
@@ -508,7 +508,7 @@
   });
 
   /* ---------- Démarrage ---------- */
-  try { const s = JSON.parse(localStorage.getItem(LS_KEY) || "null"); if (s && s.v === 3 && Array.isArray(s.players)) state = s; } catch (e) {}
+  try { const s = JSON.parse(localStorage.getItem(LS_KEY) || "null"); if (s && s.v === 4 && Array.isArray(s.players)) state = s; } catch (e) {}
   try { editMode = localStorage.getItem(LS_MODE) === "edit"; } catch (e) {}
   applyMode();
   render();
