@@ -262,14 +262,15 @@
 
   const ROSTER = [
     ["A", "Paul", "B2"], ["A", "Thomas G.", "B1"], ["A", "Hugo", "B1"],
-    ["B", "Abde", "B1"], ["B", "Charif", "B2"], ["B", "Chris", "Staff"],
+    ["B", "Manon", "Staff"], ["B", "Xavier", "Staff"], ["B", "Bocar", "B2"],
     ["C", "Augustin", "B1"], ["C", "Julien", "B2"], ["C", "Sunny", "B1"], ["C", "Alexane", "B2"],
     ["D", "Maxime", "B1"], ["D", "Timothée", "B2"], ["D", "Joan", "Staff"],
     ["E", "Thomas P.", "B1"], ["E", "Thomas D.", "B2"], ["E", "Jules", "B1"], ["E", "Baptiste", "B2"],
-    ["F", "Manon", "Staff"], ["F", "Xavier", "Staff"], ["F", "Bocar", "B2"],
+    ["F", "Abde", "B1"], ["F", "Charif", "B2"], ["F", "Chris", "Staff"],
   ];
   const defaultState = () => ({
     v: 4,
+    swapBF: true,
     players: ROSTER.map(([pool, name, promo], i) => ({ id: "p" + (i + 1), name, promo, pool, out: false })),
     scores: { A: {}, B: {}, C: {}, D: {}, E: {}, F: {}, SF1: {}, SF2: {}, FIN: {} },
   });
@@ -511,6 +512,13 @@
   try { const s = JSON.parse(localStorage.getItem(LS_KEY) || "null"); if (s && s.v === 4 && Array.isArray(s.players)) state = s; } catch (e) {}
   // Nael remplacé par Abde en cours de tournoi : on renomme sans toucher aux scores
   state.players.forEach((p) => { if (p.name === "Nael") p.name = "Abde"; });
+  // Échange des poules B et F en cours de tournoi, une seule fois, scores compris
+  if (!state.swapBF) {
+    state.players.forEach((p) => { if (p.pool === "B") p.pool = "F"; else if (p.pool === "F") p.pool = "B"; });
+    [state.scores.B, state.scores.F] = [state.scores.F || {}, state.scores.B || {}];
+    state.swapBF = true;
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+  }
   try { editMode = localStorage.getItem(LS_MODE) === "edit"; } catch (e) {}
   applyMode();
   render();
